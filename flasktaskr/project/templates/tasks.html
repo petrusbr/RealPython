@@ -1,0 +1,102 @@
+{% extends "_base.html" %}
+{% block content %}
+
+<h1>Bem-vindo ao FlaskTaskr!</h1>
+<a href="/logout">Logout</a>
+<div class="add-task">
+    <h3>Adicione uma nova tarefa:</h3>
+    <table>
+        <tr>
+            <form action="{{ url_for('new_task') }}" method="post">
+                <td>
+                    <label>Nome da Tarefa:</label>
+                    <input name="name" type="text">
+                </td>
+                <td>
+                    <label>Data de Término (dd/mm/yyyy):</label>
+                    <input name="due_date" type="text" width="120px">
+                </td>
+                <td>
+                    <label>Prioridade:</label>
+                    <select name="priority" width="100px">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </td>
+                <td>
+                    &nbsp;
+                    &nbsp;
+                    <input class="button" type="submit" value="Gravar">
+                </td>
+            </form>
+        </tr>
+    </table>
+</div>
+<div class="entries">
+    <br>
+    <br>
+    <h2>Tarefas Abertas:</h2>
+    <div class="datagrid">
+        <table>
+            <thead>
+                <tr>
+                    <th width="300px"><strong>Nome da Tarefa</strong></th>
+                    <th width="100px"><strong>Data de Término</strong></th>
+                    <th width="50px"><strong>Prioridade</strong></th>
+                    <th><strong>Ações</strong></th>
+                </tr>
+            </thead>
+            {% for task in open_tasks %}
+               <tr>
+                   <td width="300px">{{ task.name }}</td>
+                   <td width="100px">{{ task.due_date }}</td>
+                   <td width="50px">{{ task.priority }}</td>
+                   <td>
+                       <a href="{{ url_for('delete_entry', task_id = 
+                          task.task_id) }}">Remover</a>
+                       <a href="{{ url_for('complete', task_id = 
+                          task.task_id) }}">Marcar como Completa</a>
+                   </td>
+               </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <br>
+    <br>
+</div>
+<div class="entries">
+    <h2>Tarefas Encerradas:</h2>
+    <div class="datagrid">
+        <table>
+            <thead>
+                <tr>
+                    <th width="300px"><strong>Nome da Tarefa</strong></th>
+                    <th width="100px"><strong>Data de Término</strong></th>
+                    <th width="50px"><strong>Prioridade</strong></th>
+                    <th><strong>Ações</strong></th>
+                </tr>
+            </thead>
+            {% for task in closed_tasks %}
+               <tr>
+                   <td width="300px">{{ task.name }}</td>
+                   <td width="100px">{{ task.due_date }}</td>
+                   <td width="50px">{{ task.priority }}</td>
+                   <td>
+                       <a href="{{ url_for('delete_entry', task_id = 
+                          task.task_id) }}">Remover</a>
+                   </td>
+               </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock %}
