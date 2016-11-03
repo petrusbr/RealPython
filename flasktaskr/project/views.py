@@ -1,7 +1,10 @@
 #project/views.py - Controller
 import sqlite3
+
 from flask import Flask, flash, redirect, render_template, \
      request, session, url_for
+
+from functools import wraps
 
 #Configuracao
 
