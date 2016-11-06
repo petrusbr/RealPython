@@ -79,7 +79,7 @@ def tasks():
 def new_task():
     g.db = connect_db()
     name = request.form['name']
-    date = request.form['date']
+    date = request.form['due_date']
     priority = request.form['priority']
     if not name or not date or not priority:
         flash("Todos os campos devem ser preenchidos. Por favor, tente de novo")
