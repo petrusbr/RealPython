@@ -6,16 +6,22 @@ from flask import Flask, flash, redirect, render_template, \
 
 from functools import wraps
 from forms import AddTaskForm
+from flask.ext.sqlalchemy import SQLAlchemy
 
 #Configuracao
 
 app = Flask(__name__)
 app.config.from_object('_config')
+db = SQLAlchemy(app)
+
+from models import Task
 
 # Helper Functions
 
+"""
 def connect_db():
 	return sqlite3.connect(app.config['DATABASE_PATH'])
+"""
 
 def login_required(test):
     @wraps(test)
@@ -55,6 +61,7 @@ def login():
 @app.route('/tasks/')
 @login_required
 def tasks():
+    """  /* SQLite code */
     g.db = connect_db()
     cur = g.db.execute('select name, due_date, priority, task_id from tasks where status=1')
     open_tasks = [
@@ -68,15 +75,22 @@ def tasks():
         for row in cur.fetchall()
     ]
     g.db.close()
+    """
+    open_tasks = db.session.query(Task).filter_by(status='1') \
+         .order_by(Task.due_date.asc())
+    closed_tasks = db.session.query(Task).filter_by(status='0') \
+         .order_by(Task.due_date.asc())
     return render_template('tasks.html',
                            form = AddTaskForm(request.form),
                            open_tasks=open_tasks,
                            closed_tasks=closed_tasks)
     
 # Add New Tasks
-@app.route('/add/', methods=['POST'])
+@app.route('/add/', methods=['GET', 'POST'])
 @login_required
 def new_task():
+    
+    """ - /* SQLite code */
     g.db = connect_db()
     name = request.form['name']
     date = request.form['due_date']
@@ -96,15 +110,35 @@ def new_task():
         g.db.close()
         flash("Nova tarefa criada com sucesso!")
         return redirect(url_for('tasks'))
+    """
+    
+    form = AddTaskForm(request.form)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            new_task = Task( form.name.data,
+                             form.due_date.data,
+                             form.priority.data,
+                             '1'
+                            )
+            db.session.add(new_task)
+            db.session.commit()
+            flash("Nova tarefa criada com sucesso!")
+    return redirect(url_for('tasks'))
         
 # Mark tasks as complete
 @app.route('/complete/<int:task_id>/')
 @login_required
 def complete(task_id):
+    """  /* SQLite code */
     g.db = connect_db()
     g.db.execute('update tasks set status = 0 where task_id=' + str(task_id))
     g.db.commit()
     g.db.close()
+    """
+    
+    new_id = task_id
+    db.session.query(Task).filter_by(task_id=new_id).update({"status":"0"})
+    db.session.commit()
     flash("A tarefa foi marcada como completa.")
     return redirect(url_for('tasks'))
 
@@ -112,9 +146,15 @@ def complete(task_id):
 @app.route('/delete/<int:task_id>/')
 @login_required
 def delete_entry(task_id):
+    """  /* SQLite code */
     g.db = connect_db()
     g.db.execute('delete from tasks where task_id=' + str(task_id))
     g.db.commit()
     g.db.close()
+    """
+    
+    new_id = task_id
+    db.session.query(Task).filter_by(task_id=new_id).delete()
+    db.session.commit()
     flash("A tarefa foi removida.")
     return redirect(url_for('tasks'))
