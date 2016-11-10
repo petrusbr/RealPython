@@ -5,11 +5,21 @@
 <h3>Por favor faça o login para acessar a tua lista de tarefas</h3>
 
 <form method="post" action="/">
-    <span>Username: <input type="text" name="username" value="{{ request.form.username }}"></span>
+    {{ form.csrf_token }}
+    <p>
+        {{ form.name.label }}: {{ form.name }}
+        &nbsp;&nbsp;
+        {{ form.password.label }}: {{ form.password }}
+        &nbsp;&nbsp;
+        <input type="submit" value="Login">
+    </p>
+    <!--<span>Username: <input type="text" name="username" value="{{ request.form.username }}"></span>
     <span>Password: <input type="password" name="password" value="{{ request.form.password }}"></span>
-    <input type="submit" value="Login">
+    <input type="submit" value="Login"> --!>
 </form>
 
-<p><em>Use "admin" para username e password</em></p>
+<br>
+
+<p><em>Deseja criar uma conta?</em><a href="/register">Registre-se!</a></p>
 
 {% endblock %}

@@ -5,7 +5,7 @@ from flask import Flask, flash, redirect, render_template, \
      request, session, url_for, g
 
 from functools import wraps
-from forms import AddTaskForm
+from forms import AddTaskForm, RegisterForm, LoginForm
 from flask.ext.sqlalchemy import SQLAlchemy
 
 #Configuracao
@@ -14,7 +14,7 @@ app = Flask(__name__)
 app.config.from_object('_config')
 db = SQLAlchemy(app)
 
-from models import Task
+from models import Task, User
 
 # Helper Functions
 
@@ -46,17 +46,22 @@ def logout():
 @app.route('/', methods=['GET', 'POST'])
 def login():
     error = None
+    form = LoginForm(request.form)
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME'] or \
-            request.form['password'] != app.config['PASSWORD']:
-                error = 'Credenciais invalidas. Por favor, tente de novo.'
-                return render_template('login.html', error=error)
+        if form.validate_on_submit():
+            user = User.query.filter_by(name=request.form['name']).first()
+            #user = db.session.query(User).filter_by( \
+            #          name=request.form['name']).first()
+            if user is not None and user.password == request.form['password']:
+                session['logged_in'] = True
+                flash("Bem-vindo!")
+                return redirect(url_for('tasks'))
+            else:
+                error = 'Usuário ou senha inválidos.'
         else:
-            session['logged_in'] = True
-            flash("Bem-vindo!")
-            return redirect(url_for('tasks'))
+            error = 'Ambos os campos devem ser preenchidos'
     # If method = 'GET' - Se o metodo eh uma HTTP GET
-    return render_template('login.html')
+    return render_template('login.html', form=form, error=error)
     
 @app.route('/tasks/')
 @login_required
@@ -158,3 +163,20 @@ def delete_entry(task_id):
     db.session.commit()
     flash("A tarefa foi removida.")
     return redirect(url_for('tasks'))
+
+@app.route('/register/', methods=['GET', 'POST'])
+def register():
+    error = None
+    form = RegisterForm(request.form)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            new_user = User( 
+                form.name.data,
+                form.email.data, 
+                form.password.data
+            )
+            db.session.add(new_user)
+            db.session.commit()
+            flash("Obrigado por se registrar. Favor efetuar o login.")
+            return redirect(url_for('login'))
+    return render_template('register.html', form=form, error=error)
