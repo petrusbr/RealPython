@@ -11,8 +11,8 @@ from datetime import date
 db.create_all()
 
 # Insert dummy data
-db.session.add(Task("Terminar este tutorial", date(2017, 2, 1), 10, 1))
-db.session.add(Task("Terminar Real Python 2", date(2017, 6, 30), 10, 1))
+#db.session.add(Task("Terminar este tutorial", date(2017, 2, 1), 10, 1))
+#db.session.add(Task("Terminar Real Python 2", date(2017, 6, 30), 10, 1))
 
 db.session.commit()
 

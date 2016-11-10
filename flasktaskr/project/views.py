@@ -7,6 +7,7 @@ from flask import Flask, flash, redirect, render_template, \
 from functools import wraps
 from forms import AddTaskForm, RegisterForm, LoginForm
 from flask.ext.sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 #Configuracao
 
@@ -40,6 +41,7 @@ def login_required(test):
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    session.pop('user_id', None)
     flash('Voce foi deslogado. Au revoir!')
     return redirect(url_for('login'))
 
@@ -54,6 +56,7 @@ def login():
             #          name=request.form['name']).first()
             if user is not None and user.password == request.form['password']:
                 session['logged_in'] = True
+                session['user_id'] = user.id
                 flash("Bem-vindo!")
                 return redirect(url_for('tasks'))
             else:
@@ -123,7 +126,9 @@ def new_task():
             new_task = Task( form.name.data,
                              form.due_date.data,
                              form.priority.data,
-                             '1'
+                             datetime.utcnow(),
+                             '1', 
+                             session['user_id']
                             )
             db.session.add(new_task)
             db.session.commit()
