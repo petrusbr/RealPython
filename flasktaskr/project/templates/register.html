@@ -3,10 +3,10 @@
 
 <h1>Bem-vindo ao FlaskTaskr!</h1>
 <h3>Favor efetuar o cadastro para acessar a lista de tarefas</h3>
-  <form method="post" action="">
+  <form method="post" action="/register/">
       {{ form.csrf_token }}
       <p>
-          {{ form.name.label }}: {{ form.name }}
+          {{ form.name(palceholder="name") }}
           {% if form.name.errors %}
             <span class="error">
               {% for error in form.name.errors %}
@@ -14,8 +14,9 @@
               {% endfor %}
             </span>
           {% endif %}
-          &nbsp;&nbsp;
-          {{ form.email.label }}: {{ form.email }}
+      </p>
+      <p>
+          {{ form.email(placeholder="email") }}
           {% if form.email.errors %}
             <span class="error">
               {% for error in form.email.errors %}
@@ -25,7 +26,7 @@
           {% endif %}
       </p>
       <p>
-          {{ form.password.label }}: {{ form.password }}
+          {{ form.password(placeholder="password") }}
           {% if form.password.errors %}
             <span class="error">
               {% for error in form.password.errors %}
@@ -33,8 +34,9 @@
               {% endfor %}
             </span>
           {% endif %}
-          &nbsp;&nbsp;
-          {{ form.confirm.label }}: {{ form.confirm }}
+      </p>
+      <p>
+          {{ form.confirm(placeholder="confirm") }}
           {% if form.confirm.errors %}
             <span class="error">
               {% for error in form.confirm.errors %}

@@ -61,7 +61,7 @@ def login():
                 flash("Bem-vindo!")
                 return redirect(url_for('tasks'))
             else:
-                error = 'Usuário ou senha inválidos.'
+                error = 'Usuario ou senha invalidos.'
         else:
             error = 'Ambos os campos devem ser preenchidos'
     # If method = 'GET' - Se o metodo eh uma HTTP GET

@@ -20,7 +20,7 @@ class AddTaskForm(Form):
 
 
 class RegisterForm(Form):
-    name = StringField('Usuário', 
+    name = StringField('Usuario', 
                         validators=[DataRequired(), Length(min=6, max=25)]
                        )
     email = StringField('Email', 
@@ -36,7 +36,7 @@ class RegisterForm(Form):
 
 
 class LoginForm(Form):
-    name = StringField( 'Usuário',
+    name = StringField( 'Usuario',
                          validators=[DataRequired()] 
                        )
     password = PasswordField( 'Senha',
