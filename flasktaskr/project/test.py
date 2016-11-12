@@ -134,12 +134,53 @@ class AllTests(unittest.TestCase):
         response = self.app.get('tasks/', follow_redirects=True)
         self.assertIn(b'Voce precisa se logar primeiro.', response.data)
 
-    def users_can_add_tasks(self):
+    def test_users_can_add_tasks(self):
         self.create_user("Pitico", "pit@xuxo.tk", "friend")
         self.login("Pitico", "friend")
         self.app.get('tasks/', follow_redirects=True)
         response = self.create_task()
         self.assertIn(b'Nova tarefa criada com sucesso!', response.data)
+
+    def test_users_cannot_add_tasks_when_error(self):
+        self.create_user("Pitico", "pit@xuxo.tk", "friend")
+        self.login("Pitico", "friend")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.app.post('add/', data=dict(
+                       name='Ir ao banco',
+                       due_date='',
+                       priority='5',
+                       posted_date='12/11/2016',
+                       status='1'), follow_redirects=True)
+        self.assertIn(b'This field is required.', response.data)
+
+    def test_users_can_complete_task(self):
+        self.create_user("Pitico", "pit@xuxo.tk", "friend")
+        self.login("Pitico", "friend")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        response = self.app.get('complete/1', follow_redirects=True)
+        self.assertIn(b'A tarefa foi marcada como completa.', response.data)
+
+    def test_users_can_delete_tasks(self):
+        self.create_user("Pitico", "pit@xuxo.tk", "friend")
+        self.login("Pitico", "friend")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        response = self.app.get('delete/1', follow_redirects=True)
+        self.assertIn(b'A tarefa foi removida.', response.data)
+
+    def test_users_cannot_complete_tasks_from_other_users(self):
+        self.create_user("Pitico", "pit@xuxo.tk", "friend")
+        self.login("Pitico", "friend")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        self.logout()
+        self.create_user("Pituxo", "turtle@nature.com", "silvas")
+        self.login("Pituxo", "silvas")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.app.get('complete/1', follow_redirects=True)
+        self.assertNotIn(b'A tarefa foi marcada como completa.', response.data)
+        
 
 if __name__ == "__main__":
     unittest.main()
