@@ -40,6 +40,7 @@ def login_required(test):
 # Route Handlers
 
 @app.route('/logout')
+@login_required
 def logout():
     session.pop('logged_in', None)
     session.pop('user_id', None)
@@ -193,7 +194,7 @@ def register():
                 flash("Obrigado por se registrar. Favor efetuar o login.")
                 return redirect(url_for('login'))
             except IntegrityError:
-                error = "Usuario/email já existem"
+                error = "Usuario/email ja existem"
                 return render_template('register.html', form=form, error=error)
     return render_template('register.html', form=form, error=error)
 
