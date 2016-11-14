@@ -1,16 +1,15 @@
-# -*- coding: utf-8 -*-
-# project/test.py
+# project/test_tasks.py
 
 import os
 import unittest
 
 from views import app, db
 from _config import basedir
-from models import User
+from models import User, Task
 
 TEST_DB = 'test.db'
 
-class AllTests(unittest.TestCase):
+class UserTests(unittest.TestCase):
     
     #########
     # Setup #
@@ -59,70 +58,11 @@ class AllTests(unittest.TestCase):
                 posted_date='12/11/2016',
                 status='1'), follow_redirects=True)
     
-    # Test Methods
     
-    def test_user_setup(self):
-        new_user = User("platao", "platao@caverna.com", "socrates")
-        db.session.add(new_user)
-        db.session.commit()
-        test = db.session.query(User).all()
-        #test = User.query.all()
-        for t in test:
-            t.name
-            assert t.name == "platao"
-
-    def test_form_is_present_on_login_page(self):
-        response = self.app.get('/')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Por favor faca o login para acessar a tua lista de tarefas', response.data)
+    #############
+    ### Tests ###
+    #############
     
-    def test_users_cannot_login_unless_registered(self):
-        response = self.login('foo', 'bar')
-        self.assertIn(b'Usuario ou senha invalidos.', response.data)
-    
-    def test_users_can_login(self):
-        r = self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
-        #print(db.session.query(User).all())
-        response = self.login('Aristoteles', 'poemas')
-        self.assertIn(b'Bem-vindo!', response.data)
-    
-    def test_invalid_form_data(self):
-        self.register('Michael', 'michael@realpython.com', 'python', 'python')
-        response = self.login('alert("alert box!");', 'foo')
-        self.assertIn(b'Usuario ou senha invalidos.', response.data)
-    
-    def test_form_is_present_on_register_page(self):
-        response = self.app.get('register/')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Favor efetuar o cadastro para acessar a lista de tarefas', response.data)
-
-    def test_user_registration(self):
-        self.app.get('register/', follow_redirects=True)
-        response = self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
-        self.assertIn(b'Obrigado por se registrar. Favor efetuar o login', 
-                        response.data)
-
-    def test_user_registration_error(self):
-        self.app.get('register/', follow_redirects=True)
-        self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
-        self.app.get('register/', follow_redirects=True)
-        response = self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
-        self.assertIn(b'Usuario/email ja existem', 
-                       response.data)
-
-    def test_logged_in_user_can_logout(self):
-        self.register("OlavoCarvalho", "odec@gmail.com", "arruinaldo", 
-                      "arruinaldo")
-        self.login("OlavoCarvalho", "arruinaldo")
-        response = self.logout()
-        self.assertIn(b'Voce foi deslogado. Au revoir!', 
-                        response.data)
-
-    def test_not_logged_in_user_cannot_logout(self):
-        response = self.logout()
-        self.assertIn(b'Voce precisa se logar primeiro.', response.data)
-
-
     def test_logged_in_user_can_access_tasks_page(self):
         self.register("Asfodolo", "fodu@gmail.com", "pitaco", "pitaco")
         self.login("Asfodolo", "pitaco")
@@ -133,7 +73,7 @@ class AllTests(unittest.TestCase):
     def test_not_log_in_user_cannot_access_tasks_page(self):
         response = self.app.get('tasks/', follow_redirects=True)
         self.assertIn(b'Voce precisa se logar primeiro.', response.data)
-
+    
     def test_users_can_add_tasks(self):
         self.create_user("Pitico", "pit@xuxo.tk", "friend")
         self.login("Pitico", "friend")
@@ -180,8 +120,37 @@ class AllTests(unittest.TestCase):
         self.app.get('tasks/', follow_redirects=True)
         response = self.app.get('complete/1', follow_redirects=True)
         self.assertNotIn(b'A tarefa foi marcada como completa.', response.data)
+    
+    def test_users_cannot_delete_tasks_from_other_users(self):
+        self.create_user("Pitico", "pit@xuxo.tk", "friend")
+        self.login("Pitico", "friend")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        self.logout()
+        self.create_user("Pituxo", "turtle@nature.com", "silvas")
+        self.login("Pituxo", "silvas")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.app.get('delete/1', follow_redirects=True)
+        self.assertNotIn(b'A tarefa foi removida.', response.data)
+    
+    def test_str_representation_of_task_object(self):
         
-
+        from datetime import date
+        db.session.add(
+            Task(
+                "Correr abobalhado em circulo",
+                date(2016, 11, 15),
+                10,
+                date(2016, 11, 14),
+                1,
+                1
+            )
+        )
+        db.session.commit()
+        
+        tasks = db.session.query(Task).all()
+        for task in tasks:
+            self.assertEqual(task.name, 'Correr abobalhado em circulo')
+        
 if __name__ == "__main__":
     unittest.main()
-        

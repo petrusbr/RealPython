@@ -63,8 +63,8 @@ def login():
                 return redirect(url_for('tasks'))
             else:
                 error = 'Usuario ou senha invalidos.'
-        else:
-            error = 'Ambos os campos devem ser preenchidos'
+        #else: -- Ja cobertos pelo Form
+        #    error = 'Ambos os campos devem ser preenchidos'
     # If method = 'GET' - Se o metodo eh uma HTTP GET
     return render_template('login.html', form=form, error=error)
     
