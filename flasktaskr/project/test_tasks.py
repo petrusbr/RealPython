@@ -49,6 +49,16 @@ class UserTests(unittest.TestCase):
         new_user = User(name=name, email=email, password=password)
         db.session.add(new_user)
         db.session.commit()
+    
+    def create_admin_user(self):
+        new_user = User(
+            name='Wolverine', 
+            email='wolverine@xmen.com', 
+            password='jeanlove', 
+            role='admin'
+        )
+        db.session.add(new_user)
+        db.session.commit()
 
     def create_task(self):
         return self.app.post('add/', data=dict(
@@ -120,6 +130,7 @@ class UserTests(unittest.TestCase):
         self.app.get('tasks/', follow_redirects=True)
         response = self.app.get('complete/1', follow_redirects=True)
         self.assertNotIn(b'A tarefa foi marcada como completa.', response.data)
+        self.assertIn(b'Voce pode atualizar somente as tuas tarefas.', response.data)
     
     def test_users_cannot_delete_tasks_from_other_users(self):
         self.create_user("Pitico", "pit@xuxo.tk", "friend")
@@ -132,6 +143,32 @@ class UserTests(unittest.TestCase):
         self.app.get('tasks/', follow_redirects=True)
         response = self.app.get('delete/1', follow_redirects=True)
         self.assertNotIn(b'A tarefa foi removida.', response.data)
+        self.assertIn(b'Voce pode remover somente as tuas tarefas.', response.data)
+        
+    def test_admin_users_can_complete_tasks_from_other_users(self):
+        self.create_user("Pitico", "pit@xuxo.tk", "friend")
+        self.login("Pitico", "friend")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        self.logout()
+        self.create_admin_user()
+        self.login("Wolverine", "jeanlove")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.app.get('complete/1', follow_redirects=True)
+        self.assertIn(b'A tarefa foi marcada como completa.', response.data)
+    
+    def test_admin_users_can_delete_tasks_from_other_users(self):
+        self.create_user("Pitico", "pit@xuxo.tk", "friend")
+        self.login("Pitico", "friend")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        self.logout()
+        self.create_admin_user()
+        self.login("Wolverine", "jeanlove")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.app.get('delete/1', follow_redirects=True)
+        self.assertIn(b'A tarefa foi removida.', response.data)
+        self.assertNotIn(b'Voce pode remover somente as tuas tarefas.', response.data)
     
     def test_str_representation_of_task_object(self):
         

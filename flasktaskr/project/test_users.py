@@ -58,6 +58,10 @@ class UserTests(unittest.TestCase):
                 posted_date='12/11/2016',
                 status='1'), follow_redirects=True)
     
+    #############
+    ### Tests ###
+    #############
+    
     def test_users_can_register(self):
         new_user = User("platao", "platao@caverna.com", "socrates")
         db.session.add(new_user)
@@ -148,6 +152,22 @@ class UserTests(unittest.TestCase):
         users = db.session.query(User).all()
         for user in users:
             self.assertEqual(user.name, 'Pedro')
+    
+    def test_default_user_role(self):
+        db.session.add(
+            User(
+                "Joaquim", 
+                "joaq@eu.br",
+                "joaquim"
+            )
+        )
+        
+        db.session.commit()
+        
+        users = db.session.query(User).all()
+        print(users)
+        for user in users:
+            self.assertEquals(user.role, 'user')
     
 
 if __name__ == "__main__":
