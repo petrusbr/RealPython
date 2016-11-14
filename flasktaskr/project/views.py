@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.config.from_object('_config')
 db = SQLAlchemy(app)
 
-from models import Task, User
+from .models import Task, User
 
 # Helper Functions
 
