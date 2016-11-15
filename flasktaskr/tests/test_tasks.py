@@ -188,6 +188,7 @@ class UserTests(unittest.TestCase):
         tasks = db.session.query(Task).all()
         for task in tasks:
             self.assertEqual(task.name, 'Correr abobalhado em circulo')
+
         
 if __name__ == "__main__":
     unittest.main()

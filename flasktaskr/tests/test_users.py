@@ -83,7 +83,7 @@ class UserTests(unittest.TestCase):
         self.assertIn(b'Usuario ou senha invalidos.', response.data)
     
     def test_users_can_login(self):
-        r = self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
+        self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
         #print(db.session.query(User).all())
         response = self.login('Aristoteles', 'poemas')
         self.assertIn(b'Bem-vindo!', response.data)
@@ -168,6 +168,14 @@ class UserTests(unittest.TestCase):
         print(users)
         for user in users:
             self.assertEquals(user.role, 'user')
+
+
+    def test_template_displays_logged_in_user_name(self):
+        self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
+        self.login('Aristoteles', 'poemas')
+        response = self.app.get('tasks/', follow_redirects=True)
+        self.assertIn(b'Aristoteles', response.data)
+
     
 
 if __name__ == "__main__":

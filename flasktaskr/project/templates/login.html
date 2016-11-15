@@ -2,7 +2,7 @@
 {% block content %}
 
 <h1>Bem-vindo ao FlaskTaskr!</h1>
-<div class="lead">Por favor faca o login para acessar a tua lista de tarefas</div>
+<h3>Por favor faca o login para acessar a tua lista de tarefas</h3>
 
 <form class="form-signin" role="form" method="post" action="/">
     {{ form.csrf_token }}
@@ -37,7 +37,7 @@
     <input type="submit" value="Login"> -->
     <br>
     <br>
-    <p><em>Deseja criar uma conta?</em><a href="/register">Registre-se!</a></p>
+    <p><em>Deseja criar uma conta? </em><a href="/register">Registre-se!</a></p>
 </form>
 
 {% endblock %}

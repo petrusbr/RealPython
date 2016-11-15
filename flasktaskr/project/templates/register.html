@@ -6,7 +6,7 @@
   <form method="post" action="/register/">
       {{ form.csrf_token }}
       <p>
-          {{ form.name(palceholder="name") }}
+          {{ form.name(placeholder="Nome") }}
           {% if form.name.errors %}
             <span class="error">
               {% for error in form.name.errors %}
@@ -26,7 +26,7 @@
           {% endif %}
       </p>
       <p>
-          {{ form.password(placeholder="password") }}
+          {{ form.password(placeholder="Senha") }}
           {% if form.password.errors %}
             <span class="error">
               {% for error in form.password.errors %}
@@ -36,7 +36,7 @@
           {% endif %}
       </p>
       <p>
-          {{ form.confirm(placeholder="confirm") }}
+          {{ form.confirm(placeholder="Confirme a Senha") }}
           {% if form.confirm.errors %}
             <span class="error">
               {% for error in form.confirm.errors %}
