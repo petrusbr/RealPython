@@ -176,8 +176,6 @@ class UserTests(unittest.TestCase):
         response = self.app.get('tasks/', follow_redirects=True)
         self.assertIn(b'Aristoteles', response.data)
 
-    
-
 if __name__ == "__main__":
     unittest.main()
     

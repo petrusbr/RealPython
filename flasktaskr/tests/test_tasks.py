@@ -189,6 +189,46 @@ class UserTests(unittest.TestCase):
         for task in tasks:
             self.assertEqual(task.name, 'Correr abobalhado em circulo')
 
+    def test_users_cannot_see_task_modify_links_for_tasks_not_created_by_them(self):
+        self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
+        self.login('Aristoteles', 'poemas')
+        self.app.get('tasks/', follow_redirects=True)
+        self.create_task();
+        self.logout()
+        self.register("OlavoCarvalho", "odec@gmail.com", "arruinaldo", 
+                      "arruinaldo")
+        self.login("OlavoCarvalho", "arruinaldo")
+        response = self.app.get('tasks/', follow_redirects=True)
+        self.assertNotIn(b'Marcar como Completa', response.data)
+
+    def test_users_can_see_task_modify_links_for_tasks_created_by_them(self):
+        self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
+        self.login('Aristoteles', 'poemas')
+        self.app.get('tasks/', follow_redirects=True)
+        self.create_task();
+        self.logout()
+        self.register("OlavoCarvalho", "odec@gmail.com", "arruinaldo", 
+                      "arruinaldo")
+        self.login("OlavoCarvalho", "arruinaldo")
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        self.assertIn(b'complete/2/', response.data)
+        self.assertIn(b'delete/2/', response.data)
+
+    def test_admin_can_see_task_modify_links_for_all_tasks(self):
+        self.register('Aristoteles', 'totinho@hellika.gr', 'poemas', 'poemas')
+        self.login('Aristoteles', 'poemas')
+        self.app.get('tasks/', follow_redirects=True)
+        self.create_task();
+        self.logout()
+        self.create_admin_user()
+        self.login('Wolverine', 'jeanlove')
+        self.app.get('tasks/', follow_redirects=True)
+        response = self.create_task()
+        self.assertIn(b'complete/1/', response.data)
+        self.assertIn(b'delete/1/', response.data)
+        self.assertIn(b'complete/2/', response.data)
+        self.assertIn(b'delete/2/', response.data)
         
 if __name__ == "__main__":
     unittest.main()
