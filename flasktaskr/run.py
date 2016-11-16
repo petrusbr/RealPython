@@ -1,5 +1,7 @@
 # project/run.py
 
+import os
 from project import app
 
-app.run("0.0.0.0",8080,debug=True)
+port = int(os.environ.get('PORT', 8080))
+app.run(host='0.0.0.0',port=port)
