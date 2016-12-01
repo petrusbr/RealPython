@@ -1,8 +1,19 @@
-<h1>Bloggy: Um app de blog</h1>
-{% if ultimos_posts %}
-<ul>
-{% for post in ultimos_posts %}
-  <li>{{ post.created_at }} | {{ post.title }} | {{ post.content }}</li>
-{% endfor %}
-</ul>
-{% endif %}
+<html>
+    <head>
+        <title>Bloggy: Um app de blog</title>
+    </head>
+    <body>
+        <h2>Bem-vindo ao Bloggy!</h2>
+        {% if ultimos_posts %}
+        <ul>
+        {% for post in ultimos_posts %}
+          <h3><a href="/blog/{{ post.url }}">{{ post.title }}</a></h3>
+          <p><em>{{ post.created_at }}</em></p>
+          <p>{{ post.content }}</p>
+          <br>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </body>
+</html>
+
