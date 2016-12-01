@@ -7,7 +7,12 @@
         <ul>
             <p><em>{{ single_post.created_at }}</em></p>
             <p>{{ single_post.content }}</p>
+            <p>Tag: {{ single_post.tag }}</p>
             <br>
+            <p> {% if single_post.image %}
+                  <img src="/media/{{ single_post.image }}">
+                {% endif %}
+            </p>
         </ul>
         <p>Voltar à <a href="/blog">página inicial</a>.</p>
     </body>
