@@ -1,13 +1,12 @@
-<html>
-    <head>
-        <title>Bloggy: {{ single_post.title }}</title>
-    </head>
-    <body>
+{% extends '_base.html' %}
+{% block content %}
+
         <h2>{{ single_post.title }}</h2>
         <ul>
             <p><em>{{ single_post.created_at }}</em></p>
             <p>{{ single_post.content }}</p>
             <p>Tag: {{ single_post.tag }}</p>
+            <p>Visualizações: {{ single_post.views }}</p>
             <br>
             <p> {% if single_post.image %}
                   <img src="/media/{{ single_post.image }}">
@@ -15,6 +14,6 @@
             </p>
         </ul>
         <p>Voltar à <a href="/blog">página inicial</a>.</p>
-    </body>
-</html>
+{% endblock %}
+
         

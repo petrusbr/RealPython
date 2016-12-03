@@ -1,19 +1,28 @@
-<html>
-    <head>
-        <title>Bloggy: Um app de blog</title>
-    </head>
-    <body>
-        <h2>Bem-vindo ao Bloggy!</h2>
+{% extends '_base.html' %}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-8">
         {% if ultimos_posts %}
-        <ul>
-        {% for post in ultimos_posts %}
-          <h3><a href="/blog/{{ post.url }}">{{ post.title }}</a></h3>
-          <p><em>{{ post.created_at }}</em></p>
-          <p>{{ post.content }}</p>
-          <br>
-        {% endfor %}
-        </ul>
+           <ul>
+               {% for post in ultimos_posts %}
+                  <h3><a href="/blog/{{ post.url }}">{{ post.title }}</a></h3>
+                  <p><em>{{ post.created_at }}</em></p>
+                  <p>{{ post.content }}</p>
+                  <br>
+               {% endfor %}
+           </ul>
         {% endif %}
-    </body>
-</html>
+    </div>
+    <div class="col-md-4">
+        <h4> Confira:</h4>
+        <ul>
+            {% for popular_post in posts_populares %}
+               <li><a href="/blog/{{ popular_post.url }}">{{ popular_post.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}
 
